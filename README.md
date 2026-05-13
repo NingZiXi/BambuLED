@@ -90,34 +90,6 @@ sequenceDiagram
   App->>Led: 更新灯效参数(队列/共享状态)
   Led-->>Led: 独立周期渲染 WS2812
 ```
-
-### 🔄 设备工作流程
-
-```mermaid
-%%{init: {"look":"handDrawn","theme":"base","themeVariables":{"fontFamily":"ui-sans-serif, system-ui","lineColor":"#111827"}}}%%
-flowchart TD
-  classDef step fill:#f3f4f6,stroke:#111827,color:#111827,stroke-width:2,rx:10,ry:10;
-  classDef decision fill:#ffe8a3,stroke:#111827,color:#111827,stroke-width:2,rx:10,ry:10;
-
-  Boot["上电启动"]:::step --> AP["开启 SoftAP + Captive Portal"]:::step
-  AP --> Page["手机连接热点进入配置页"]:::step
-  Page --> Save["保存 WiFi / 打印机 / 灯效配置"]:::step
-  Save --> STA{"WiFi 连接成功？"}:::decision
-  STA -->|否| Retry["提示失败 / 继续保持 AP 可配置"]:::step --> Page
-  STA -->|是| Mqtt["连接打印机 MQTT(TLS)"]:::step
-  Mqtt --> Run["循环：接收状态 → 映射灯效 → 输出 WS2812"]:::step
-  Run --> Run
-```
-
-## ⚙️ 默认参数
-
-- Target：`esp32s3`
-- SoftAP SSID：`BambuLED-XXXX`（无密码）
-- SoftAP 网关：`http://192.168.4.1/`
-- LED GPIO：`1`（可在网页修改到更高 GPIO，比如 48）
-- LED 数量：`10`
-- 打印机 MQTT：默认 `8883` + TLS（网页可改）
-
 <a id="快速开始"></a>
 ## 🚀 快速开始
 
