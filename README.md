@@ -177,28 +177,10 @@ idf.py -p COM3 flash monitor
 
 ---
 
-## 🙏 致谢
-
-- ESP-IDF（WiFi / HTTP Server / MQTT / NVS / LED Strip）
-- 乐鑫官方 `components/dns_server`（Captive Portal DNS 劫持）
-
-## ⭐ Star 历史
-
-[![Star History Chart](https://api.star-history.com/svg?repos=NingZiXi/BambuLED&type=Date)](https://star-history.com/#NingZiXi/BambuLED&Date)
-
 ## 📄 许可证
 
 本项目基于 MIT License 开源，详情请参阅 [LICENSE](LICENSE) 文件
 
-## 🤝 贡献
-
-欢迎提交 Issue / PR 来完善本项目（功能、兼容性、文档与排错经验都很有价值）。
-
-<p align="center">
-  <a href="https://github.com/NingZiXi/BambuLED/graphs/contributors">
-    <img src="https://contrib.rocks/image?repo=NingZiXi/BambuLED" />
-  </a>
-</p>
 
 ## ❤️ 支持项目
 
@@ -213,6 +195,20 @@ idf.py -p COM3 flash monitor
 <p align="center">也可以微信或支付宝直接扫码赞赏</p>
 <p align="center">
   <img src="./image/PaymentQRcode.jpg" width="260" alt="赞赏二维码">
+</p>
+
+## 🤝 贡献
+
+欢迎提交 Issue / PR 来完善本项目（功能、兼容性、文档与排错经验都很有价值）。
+
+**📈 Star History**
+[![Star History Chart](https://api.star-history.com/svg?repos=NingZiXi/BambuLED&type=Date)](https://star-history.com/#NingZiXi/BambuLED&Date)
+
+**👤 贡献者**
+<p align="center">
+  <a href="https://github.com/NingZiXi/BambuLED/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=NingZiXi/BambuLED" />
+  </a>
 </p>
 
 <p align="center">
