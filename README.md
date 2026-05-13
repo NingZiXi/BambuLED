@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="BambuLED" src="./image/bambuLED.jpg" width="720" />
+  <img alt="BambuLED" src="./image/bambuLED.png" width="720" />
 </p>
 
 <h1 align="center">✨ BambuLED</h1>
