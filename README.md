@@ -19,6 +19,8 @@
   <img alt="Protocol" src="https://img.shields.io/badge/Protocol-MQTT-660066?logo=mqtt" />
   <img alt="LED" src="https://img.shields.io/badge/LED-WS2812-222222" />
   <img alt="License" src="https://img.shields.io/badge/License-MIT-green" />
+  <a href="https://github.com/NingZiXi/BambuLED/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/NingZiXi/BambuLED?style=social" /></a>
+  <img alt="Visitors" src="https://visitor-badge.laobi.icu/badge?page_id=NingZiXi.BambuLED&left_color=grey&right_color=blue" />
 </p>
 
 ---
@@ -44,13 +46,68 @@
 
 ## 🧱 架构
 
-- `AppController`：系统总控，处理事件队列、状态机、灯效映射
-- `WifiService`：SoftAP/STA/APSTA 管理与事件回报
-- `WebServer`：静态页面 + `/api/config` 配置 API + Captive Portal 兼容路由
-- `MqttService`：连接本地 MQTT、订阅 report、解析状态（含舱灯 ledctrl）
-- `LedController`：独立 LED 渲染任务（RMT + `led_strip`）
-- `ConfigStore`：NVS 参数读写
-- `components/dns_server`：使用乐鑫官方 DNS 劫持组件
+```mermaid
+%%{init: {"look":"handDrawn","theme":"base","themeVariables":{"fontFamily":"ui-sans-serif, system-ui","lineColor":"#111827"}}}%%
+flowchart LR
+  classDef task fill:#f3f4f6,stroke:#111827,color:#111827,stroke-width:2,rx:10,ry:10;
+  classDef core fill:#ffe8a3,stroke:#111827,color:#111827,stroke-width:2,rx:10,ry:10;
+  classDef sys fill:#ffffff,stroke:#111827,color:#111827,stroke-width:2,stroke-dasharray: 6 4,rx:10,ry:10;
+
+  subgraph ESP["ESP32-S3（BambuLED）多任务架构"]
+    direction TB
+    AppTask["AppController<br/>总控任务"]:::core
+    LedTask["LedController<br/>渲染任务"]:::task
+    SysHttp["HTTP Server 任务<br/>(ESP-IDF)"]:::sys
+    SysMqtt["MQTT Client 任务<br/>(ESP-IDF)"]:::sys
+    SysWifi["WiFi / EventLoop<br/>(ESP-IDF)"]:::sys
+  end
+
+  SysHttp --> AppTask
+  SysWifi --> AppTask
+  SysMqtt --> AppTask
+  AppTask --> LedTask
+```
+
+### 🧵 多任务架构
+
+- AppController 作为“总控任务”，接收 WiFi/MQTT/Web 的事件，统一做状态机与灯效映射
+- LedController 作为“渲染任务”，专注输出 WS2812 像素数据（避免 UI/网络抖动影响灯效）
+
+### 📬 任务队列通信流程
+
+```mermaid
+%%{init: {"look":"handDrawn","theme":"base","themeVariables":{"fontFamily":"ui-sans-serif, system-ui","lineColor":"#111827","actorBkg":"#f3f4f6","actorBorder":"#111827","actorTextColor":"#111827","signalColor":"#111827","signalTextColor":"#111827","activationBkgColor":"#ffe8a3","activationBorderColor":"#111827","noteBkgColor":"#ffffff","noteBorderColor":"#111827","noteTextColor":"#111827"}}}%%
+sequenceDiagram
+  participant Web as WebServer(API)
+  participant App as AppController(队列接收)
+  participant Wifi as WifiService
+  participant Mqtt as MqttService
+  participant Led as LedController(渲染任务)
+
+  Web->>App: 保存配置 / 触发动作(事件入队)
+  Wifi->>App: WiFi 连接/断开/拿到 IP(事件入队)
+  Mqtt->>App: 打印机状态上报(事件入队)
+  App->>Led: 更新灯效参数(队列/共享状态)
+  Led-->>Led: 独立周期渲染 WS2812
+```
+
+### 🔄 设备工作流程
+
+```mermaid
+%%{init: {"look":"handDrawn","theme":"base","themeVariables":{"fontFamily":"ui-sans-serif, system-ui","lineColor":"#111827"}}}%%
+flowchart TD
+  classDef step fill:#f3f4f6,stroke:#111827,color:#111827,stroke-width:2,rx:10,ry:10;
+  classDef decision fill:#ffe8a3,stroke:#111827,color:#111827,stroke-width:2,rx:10,ry:10;
+
+  Boot["上电启动"]:::step --> AP["开启 SoftAP + Captive Portal"]:::step
+  AP --> Page["手机连接热点进入配置页"]:::step
+  Page --> Save["保存 WiFi / 打印机 / 灯效配置"]:::step
+  Save --> STA{"WiFi 连接成功？"}:::decision
+  STA -->|否| Retry["提示失败 / 继续保持 AP 可配置"]:::step --> Page
+  STA -->|是| Mqtt["连接打印机 MQTT(TLS)"]:::step
+  Mqtt --> Run["循环：接收状态 → 映射灯效 → 输出 WS2812"]:::step
+  Run --> Run
+```
 
 ## ⚙️ 默认参数
 
@@ -125,13 +182,38 @@ idf.py -p COM3 flash monitor
 - ESP-IDF（WiFi / HTTP Server / MQTT / NVS / LED Strip）
 - 乐鑫官方 `components/dns_server`（Captive Portal DNS 劫持）
 
+## ⭐ Star 历史
+
+[![Star History Chart](https://api.star-history.com/svg?repos=NingZiXi/BambuLED&type=Date)](https://star-history.com/#NingZiXi/BambuLED&Date)
+
+## 📄 许可证
+
+本项目基于 MIT License 开源，详情请参阅 [LICENSE](LICENSE) 文件
+
 ## 🤝 贡献
 
 欢迎提交 Issue / PR 来完善本项目（功能、兼容性、文档与排错经验都很有价值）。
 
-## 📄 许可证
+<p align="center">
+  <a href="https://github.com/NingZiXi/BambuLED/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=NingZiXi/BambuLED" />
+  </a>
+</p>
 
-本项目基于 MIT License 开源，详情请参阅 [LICENSE](LICENSE) 文件。
+## ❤️ 支持项目
+
+如果 BambuLED 对你有帮助，欢迎赞助一杯咖啡☕，支持持续开发与更新～
+
+<p align="center">
+  <a href="https://ifdian.net/a/NingZiXi" target="_blank">
+    <img src="https://img.shields.io/badge/%E7%88%B1%E5%8F%91%E7%94%B5-%E8%B5%9E%E5%8A%A9%E6%94%AF%E6%8C%81-FFD54F?style=for-the-badge&labelColor=6A5ACD" width="220" alt="爱发电赞助">
+  </a>
+</p>
+
+<p align="center">也可以微信或支付宝直接扫码赞赏</p>
+<p align="center">
+  <img src="./image/PaymentQRcode.jpg" width="260" alt="赞赏二维码">
+</p>
 
 <p align="center">
 感谢您使用 BambuLED！<br/>
