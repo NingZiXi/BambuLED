@@ -1,0 +1,1673 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>BambuLED</title>
+    <style>
+        :root {
+            color-scheme: light;
+            background: #f4f7fb;
+            color: #18212b;
+            font-family: Arial, sans-serif
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            padding: 24px
+        }
+
+        .shell {
+            max-width: 920px;
+            margin: 0 auto
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #132238, #25466f);
+            color: #fff;
+            padding: 24px;
+            border-radius: 20px;
+            box-shadow: 0 16px 40px rgba(18, 34, 56, .22)
+        }
+
+        .hero h1 {
+            margin: 0 0 8px;
+            font-size: 30px
+        }
+
+        .hero p {
+            margin: 0;
+            color: rgba(255, 255, 255, .82);
+            line-height: 1.5
+        }
+
+        .panel {
+            margin-top: 18px;
+            background: #fff;
+            border-radius: 20px;
+            padding: 18px;
+            box-shadow: 0 10px 30px rgba(23, 36, 54, .08)
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 18px
+        }
+
+        .tab-btn {
+            border: 0;
+            border-radius: 999px;
+            padding: 12px 18px;
+            background: #e9eef5;
+            color: #26405f;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .2s
+        }
+
+        .tab-btn.active {
+            background: #25466f;
+            color: #fff;
+            box-shadow: 0 8px 18px rgba(37, 70, 111, .22)
+        }
+
+        .tab-panel {
+            display: none
+        }
+
+        .tab-panel.active {
+            display: block
+        }
+
+        .section-title {
+            margin: 0 0 8px;
+            font-size: 20px;
+            color: #1d2f47
+        }
+
+        .hint {
+            margin: 0 0 16px;
+            color: #66788f;
+            font-size: 13px;
+            line-height: 1.6
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 14px
+        }
+
+        .card {
+            border: 1px solid #e6edf5;
+            border-radius: 16px;
+            padding: 16px;
+            background: #fbfdff
+        }
+
+        .status-card {
+            margin-bottom: 14px;
+            border: 1px solid #dce7f4;
+            border-radius: 16px;
+            padding: 16px 18px;
+            background: linear-gradient(180deg, #f8fbff, #eef5ff)
+        }
+
+        .status-card h3 {
+            margin: 12px 0 8px;
+            font-size: 18px;
+            color: #1e3452
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 700
+        }
+
+        .status-pill.online {
+            background: rgba(38, 137, 74, .12);
+            color: #1f7a42
+        }
+
+        .status-pill.offline {
+            background: rgba(37, 70, 111, .12);
+            color: #25466f
+        }
+
+        .advanced {
+            margin-top: 14px;
+            border: 1px dashed #d6e0ec;
+            border-radius: 16px;
+            background: #f8fbff;
+            padding: 14px 16px
+        }
+
+        .advanced summary {
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            color: #29476b;
+            outline: none
+        }
+
+        .field-tip {
+            display: block;
+            margin-top: 6px;
+            font-size: 12px;
+            font-weight: 400;
+            color: #71839a;
+            line-height: 1.5
+        }
+
+        .advanced-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+            margin-top: 14px
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #33465d
+        }
+
+        input {
+            width: 100%;
+            margin-top: 8px;
+            padding: 12px 14px;
+            border: 1px solid #d7e0ea;
+            border-radius: 12px;
+            background: #fff;
+            font-size: 14px
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #4f7fbc;
+            box-shadow: 0 0 0 3px rgba(79, 127, 188, .15)
+        }
+
+        select {
+            width: 100%;
+            margin-top: 8px;
+            padding: 12px 14px;
+            border: 1px solid #d7e0ea;
+            border-radius: 12px;
+            background: #fff;
+            font-size: 14px
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #4f7fbc;
+            box-shadow: 0 0 0 3px rgba(79, 127, 188, .15)
+        }
+
+        input[type="color"] {
+            padding: 6px;
+            min-height: 48px;
+            cursor: pointer
+        }
+
+        .color-text {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            letter-spacing: .3px
+        }
+
+        .swatch-btn {
+            width: 46px;
+            height: 30px;
+            border-radius: 12px;
+            border: 1px solid #d7e0ea;
+            background: #000;
+            cursor: pointer;
+            flex: none
+        }
+
+        .color-screen {
+            position: fixed;
+            inset: 0;
+            background: rgba(13, 24, 39, .72);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            z-index: 35
+        }
+
+        .color-screen.show {
+            display: flex
+        }
+
+        .color-card {
+            width: min(560px, 100%);
+            border-radius: 18px;
+            padding: 18px 16px;
+            background: #fff;
+            box-shadow: 0 18px 44px rgba(13, 24, 39, .24);
+            max-height: calc(100vh - 36px);
+            overflow: auto
+        }
+
+        .color-card h3 {
+            margin: 0 0 12px;
+            font-size: 18px;
+            color: #1f3550
+        }
+
+        .color-preview {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 14px;
+            border: 1px solid #dfe8f3;
+            background: linear-gradient(180deg, #fbfdff, #f7fbff);
+            margin-bottom: 12px
+        }
+
+        .color-chip {
+            width: 62px;
+            height: 40px;
+            border-radius: 14px;
+            border: 1px solid #d7e0ea;
+            background: #000;
+            flex: none
+        }
+
+        .picker-grid {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 12px
+        }
+
+        @media (max-width: 520px) {
+            .picker-grid {
+                grid-template-columns: 1fr
+            }
+        }
+
+        @media (max-width: 520px) {
+            .color-card {
+                padding: 14px 12px;
+                max-height: calc(100vh - 24px)
+            }
+
+            .picker-wrap {
+                padding: 8px
+            }
+
+            .picker-grid {
+                gap: 10px
+            }
+
+            .picker-wrap canvas {
+                width: 180px;
+                height: 180px;
+                margin: 0 auto
+            }
+        }
+
+        @media (max-height: 700px) {
+            .picker-wrap canvas {
+                width: 170px;
+                height: 170px
+            }
+        }
+
+        .color-card .inline-actions {
+            position: sticky;
+            bottom: 0;
+            background: #fff;
+            padding-top: 12px
+        }
+
+        .picker-wrap {
+            position: relative;
+            border-radius: 16px;
+            border: 1px solid #dfe8f3;
+            background: #fff;
+            padding: 10px
+        }
+
+        .picker-canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            touch-action: none
+        }
+
+        .picker-indicator {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-radius: 999px;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 10px rgba(13, 24, 39, .28);
+            transform: translate(-50%, -50%);
+            pointer-events: none
+        }
+
+        input[type="range"] {
+            padding: 0;
+            border: 0;
+            box-shadow: none;
+            background: transparent
+        }
+
+        .lighting-stack {
+            display: grid;
+            gap: 18px
+        }
+
+        .subsection {
+            border: 1px solid #e7eef7;
+            border-radius: 18px;
+            padding: 18px;
+            background: linear-gradient(180deg, #fcfdff, #f8fbff)
+        }
+
+        .subsection h3 {
+            margin: 0 0 8px;
+            font-size: 17px;
+            color: #1f3550
+        }
+
+        .state-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 14px
+        }
+
+        .state-card {
+            border: 1px solid #dfe8f3;
+            border-radius: 16px;
+            padding: 16px;
+            background: #fff
+        }
+
+        .state-card h4 {
+            margin: 0 0 6px;
+            font-size: 15px;
+            color: #203754
+        }
+
+        .state-card .hint {
+            margin-bottom: 12px
+        }
+
+        .range-wrap {
+            margin-top: 8px
+        }
+
+        .range-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #6b7d92
+        }
+
+        .range-value {
+            font-weight: 700;
+            color: #25466f
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-top: 10px
+        }
+
+        .checkbox-row input {
+            width: auto;
+            margin: 0
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid #ebf0f6
+        }
+
+        .actions .hint {
+            margin: 0;
+            max-width: 580px
+        }
+
+        button {
+            border: 0;
+            border-radius: 14px;
+            padding: 13px 22px;
+            background: linear-gradient(135deg, #25466f, #396dab);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 12px 24px rgba(41, 81, 130, .25)
+        }
+
+        button.secondary {
+            background: #eef3f9;
+            color: #29476b;
+            box-shadow: none
+        }
+
+        .inline-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 14px
+        }
+
+        .notice {
+            margin: 16px 0 0;
+            padding: 13px 16px;
+            border-radius: 14px;
+            font-size: 13px;
+            line-height: 1.6;
+            display: none
+        }
+
+        .notice.show {
+            display: block
+        }
+
+        .notice.success {
+            background: #edf8f0;
+            color: #21663b;
+            border: 1px solid #cde8d6
+        }
+
+        .notice.pending {
+            background: #eef4ff;
+            color: #25466f;
+            border: 1px solid #d3dff3
+        }
+
+        .notice.error {
+            background: #fff1f0;
+            color: #b43d2f;
+            border: 1px solid #f2c9c3
+        }
+
+        .label-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px
+        }
+
+        .help-icon {
+            width: 22px;
+            height: 22px;
+            border-radius: 999px;
+            padding: 0;
+            border: 0;
+            background: rgba(37, 70, 111, .12);
+            color: #25466f;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: none;
+            flex: none
+        }
+
+        .help-icon:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 127, 188, .18)
+        }
+
+        .help-screen {
+            position: fixed;
+            inset: 0;
+            background: rgba(13, 24, 39, .72);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            z-index: 30
+        }
+
+        .help-screen.show {
+            display: flex
+        }
+
+        .help-card {
+            width: min(520px, 100%);
+            border-radius: 18px;
+            padding: 18px 16px;
+            background: #fff;
+            box-shadow: 0 18px 44px rgba(13, 24, 39, .24)
+        }
+
+        .help-card h3 {
+            margin: 0 0 10px;
+            font-size: 18px;
+            color: #1f3550
+        }
+
+        .help-card p {
+            margin: 0 0 14px;
+            color: #66788f;
+            font-size: 13px;
+            line-height: 1.6
+        }
+
+        .result-screen {
+            position: fixed;
+            inset: 0;
+            background: rgba(13, 24, 39, .72);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            z-index: 20
+        }
+
+        .result-screen.show {
+            display: flex
+        }
+
+        .result-card {
+            width: min(460px, 100%);
+            border-radius: 22px;
+            padding: 28px 24px;
+            background: #fff;
+            box-shadow: 0 18px 44px rgba(13, 24, 39, .24);
+            text-align: center
+        }
+
+        .result-card h2 {
+            margin: 0 0 10px;
+            font-size: 24px;
+            color: #1f3550
+        }
+
+        .countdown {
+            margin-top: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #25466f
+        }
+
+        @media (max-width:640px) {
+            body {
+                padding: 14px
+            }
+
+            .hero,
+            .panel {
+                border-radius: 16px
+            }
+
+            .tab-btn {
+                width: 100%;
+                text-align: center
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="shell">
+        <div class="hero">
+            <h1>BambuLED</h1>
+            <p>拓竹打印机状态联动灯带配置中心。通过下面 3 个菜单切换配置区域，随时调整 WiFi、打印机 MQTT 和灯光参数。</p>
+        </div>
+        <div class="panel">
+            <div class="tabs">
+                <button type="button" class="tab-btn active" data-tab="wifi">WiFi 配置</button>
+                <button type="button" class="tab-btn" data-tab="printer">连接打印机</button>
+                <button type="button" class="tab-btn" data-tab="lighting">灯光设置</button>
+            </div>
+            <form method="post" action="/api/config">
+                <section class="tab-panel active" id="tab-wifi">
+                    <h2 class="section-title">WiFi 配置</h2>
+                    <p class="hint">填写家庭或工作室的 2.4GHz WiFi 信息，保存后设备会自动尝试联网。</p>
+                    <div class="status-card">
+                        <span class="status-pill offline" id="wifi_status_badge">未连接</span>
+                        <h3 id="wifi_status_title">当前未连接到路由器</h3>
+                        <p class="hint" id="wifi_status_text">设备会持续开启配置热点，你也可以在这里填写家里或工作室的 WiFi 信息。</p>
+                        <div class="inline-actions">
+                            <button type="button" class="secondary" id="disconnect_wifi_btn" hidden>断开当前 WiFi</button>
+                        </div>
+                    </div>
+                    <div class="grid">
+                        <div class="card">
+                            <label>WiFi 名称<input name="wifi_ssid" value="" placeholder="请输入 WiFi 名称"></label>
+                        </div>
+                        <div class="card">
+                            <label>WiFi 密码<input name="wifi_password" type="password" value="" placeholder="请输入 WiFi 密码"></label>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <p class="hint">这里只会提交 WiFi 名称和密码，用于连接或切换路由器。</p>
+                        <button type="button" id="connect_wifi_btn">连接 WiFi</button>
+                    </div>
+                </section>
+
+                <section class="tab-panel" id="tab-printer">
+                    <h2 class="section-title">连接打印机</h2>
+                    <p class="hint">填写拓竹打印机本地 MQTT 连接信息，用于获取实时状态并自动切换灯效。</p>
+                    <div class="grid">
+                        <div class="card">
+                            <label><span class="label-row">打印机 IP<button type="button" class="help-icon" data-help-title="打印机 IP"
+                                        data-help-text="在打印机屏幕：设置 → 网络（WiFi/以太网）里可以看到当前 IP；也可以在路由器后台的已连接设备列表里查。">?</button></span><input
+                                    name="printer_ip" value="" placeholder="例如 192.168.1.100"></label>
+                        </div>
+                        <div class="card">
+                            <label><span class="label-row">访问码<button type="button" class="help-icon" data-help-title="访问码"
+                                        data-help-text="访问码是拓竹打印机 LAN 模式的本地访问码：通常在打印机屏幕的设置/网络/LAN 模式相关页面里查看或重新生成。">?</button></span><input
+                                    name="printer_access_code" value="" placeholder="请输入打印机访问码"></label>
+                        </div>
+                        <div class="card">
+                            <label><span class="label-row">序列号<button type="button" class="help-icon" data-help-title="序列号"
+                                        data-help-text="序列号可以在打印机屏幕：设置 → 关于/设备信息里查看，也可以在机身铭牌/包装标签上找到。">?</button></span><input
+                                    name="printer_serial" value="" placeholder="请输入打印机序列号"></label>
+                        </div>
+                    </div>
+                    <details class="advanced">
+                        <summary>高级设置</summary>
+                        <div class="advanced-grid">
+                            <div class="card">
+                                <label><span class="label-row">MQTT 端口<button type="button" class="help-icon" data-help-title="MQTT 端口"
+                                            data-help-text="拓竹打印机本地 MQTT 常用端口是 8883，并且通常需要启用 TLS。只有在你确认打印机/网关使用了其它端口时才修改这里。">?</button></span><input
+                                        name="mqtt_port" type="number" min="1" max="65535" value="8883"><span class="field-tip">默认使用 8883（建议启用 TLS）</span></label>
+                            </div>
+                            <div class="card">
+                                <label class="checkbox-row"><input name="mqtt_use_tls" type="checkbox" checked><span>启用 TLS</span><button type="button"
+                                        class="help-icon" data-help-title="TLS"
+                                        data-help-text="拓竹打印机本地 MQTT 通常需要启用 TLS（常见端口 8883）。如果你使用的是明文 MQTT（如 1883）才取消勾选。">?</button></label>
+                            </div>
+                        </div>
+                    </details>
+                    <div class="actions">
+                        <p class="hint">这里只会保存打印机 MQTT 连接参数，不会修改 WiFi 和灯光设置。</p>
+                        <button type="button" id="save_printer_btn">保存打印机配置</button>
+                    </div>
+                </section>
+
+                <section class="tab-panel" id="tab-lighting">
+                    <h2 class="section-title">灯光设置</h2>
+                    <p class="hint">这里可以自定义灯带硬件参数、默认颜色，以及打印机各状态的灯效映射。保存后会持久化到设备，并立即重新应用。</p>
+                    <div class="lighting-stack">
+                        <div class="subsection">
+                            <h3>基础参数</h3>
+                            <p class="hint">先设置灯带硬件和全局亮度，下面每个状态再单独设置颜色、效果和速度。</p>
+                            <div class="grid">
+                                <div class="card">
+                                    <label>灯珠数量<input name="led_count" type="number" min="1" max="300" value=""></label>
+                                    <span class="field-tip">默认 10 颗，按实际灯带数量填写。</span>
+                                </div>
+                                <div class="card">
+                                    <label>数据 GPIO<input name="led_gpio" type="number" min="0" max="48" value=""></label>
+                                    <span class="field-tip">默认 GPIO 1（ESP32-S3 可用到 48），请按你的接线修改。</span>
+                                </div>
+                                <div class="card">
+                                    <label>全局亮度</label>
+                                    <div class="range-wrap">
+                                        <div class="range-meta"><span>1-255</span><span class="range-value" id="brightness_value">64</span></div>
+                                        <input name="brightness" type="range" min="1" max="255" value="64" data-range-label="brightness_value">
+                                    </div>
+                                    <span class="field-tip">所有灯效都会在这个亮度上运行。</span>
+                                </div>
+                                <div class="card">
+                                    <label>默认速度</label>
+                                    <div class="range-wrap">
+                                        <div class="range-meta"><span>1-255</span><span class="range-value" id="effect_speed_value">40</span></div>
+                                        <input name="effect_speed" type="range" min="1" max="255" value="40" data-range-label="effect_speed_value">
+                                    </div>
+                                    <span class="field-tip">新状态如果没单独设置，会回退到这个速度。</span>
+                                </div>
+                                <div class="card">
+                                    <label><span class="label-row">默认待机颜色<button type="button" class="swatch-btn" data-color-field="default_hex"
+                                                aria-label="调色"></button></span><input name="default_hex" type="text" class="color-text" value="#202020"
+                                            placeholder="#RRGGBB" autocapitalize="none" autocomplete="off" spellcheck="false"></label>
+                                </div>
+                                <div class="card">
+                                    <label><span class="label-row">进度条背景色<button type="button" class="swatch-btn"
+                                                data-color-field="progress_background_hex" aria-label="调色"></button></span><input
+                                            name="progress_background_hex" type="text" class="color-text" value="#04040C" placeholder="#RRGGBB"
+                                            autocapitalize="none" autocomplete="off" spellcheck="false"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="subsection">
+                            <h3>状态联动自定义</h3>
+                            <p class="hint">每种打印机状态都可以单独选择灯效、速度和颜色。打印中建议保留“进度条”，完成建议使用“彩虹流光”。</p>
+                            <div class="state-grid">
+                                <div class="state-card">
+                                    <h4>空闲 / 待机</h4>
+                                    <p class="hint">推荐柔和呼吸灯。</p>
+                                    <label>灯效
+                                        <select name="idle_effect">
+                                            <option value="7">关闭</option>
+                                            <option value="0">单色常亮</option>
+                                            <option value="1">呼吸灯</option>
+                                            <option value="2">单色渐变</option>
+                                            <option value="3">跑马灯 / 流光</option>
+                                            <option value="4">彩虹流光</option>
+                                            <option value="5">进度条</option>
+                                            <option value="6">闪烁</option>
+                                        </select>
+                                    </label>
+                                    <label>速度
+                                        <div class="range-wrap">
+                                            <div class="range-meta"><span>慢 ← → 快</span><span class="range-value" id="idle_speed_value">40</span></div>
+                                            <input name="idle_speed" type="range" min="1" max="255" value="40" data-range-label="idle_speed_value">
+                                        </div>
+                                    </label>
+                                    <label><span class="label-row">颜色<button type="button" class="swatch-btn" data-color-field="idle_hex"
+                                                aria-label="调色"></button></span><input name="idle_hex" type="text" class="color-text" value="#000000"
+                                            placeholder="#RRGGBB" autocapitalize="none" autocomplete="off" spellcheck="false"></label>
+                                </div>
+
+                                <div class="state-card">
+                                    <h4>加热中</h4>
+                                    <p class="hint">推荐暖黄色慢闪或渐变。</p>
+                                    <label>灯效
+                                        <select name="heating_effect">
+                                            <option value="7">关闭</option>
+                                            <option value="6">高亮闪烁</option>
+                                            <option value="2">单色渐变</option>
+                                            <option value="1">呼吸灯</option>
+                                            <option value="0">单色常亮</option>
+                                            <option value="3">跑马灯 / 流光</option>
+                                        </select>
+                                    </label>
+                                    <label>速度
+                                        <div class="range-wrap">
+                                            <div class="range-meta"><span>慢 ← → 快</span><span class="range-value" id="heating_speed_value">70</span></div>
+                                            <input name="heating_speed" type="range" min="1" max="255" value="70" data-range-label="heating_speed_value">
+                                        </div>
+                                    </label>
+                                    <label><span class="label-row">颜色<button type="button" class="swatch-btn" data-color-field="heating_hex"
+                                                aria-label="调色"></button></span><input name="heating_hex" type="text" class="color-text" value="#FFAA30"
+                                            placeholder="#RRGGBB" autocapitalize="none" autocomplete="off" spellcheck="false"></label>
+                                </div>
+
+                                <div class="state-card">
+                                    <h4>打印中</h4>
+                                    <p class="hint">推荐使用进度条显示打印进度，也可以改成常亮或流光。</p>
+                                    <label>灯效
+                                        <select name="printing_effect">
+                                            <option value="7">关闭</option>
+                                            <option value="5">打印进度条</option>
+                                            <option value="3">跑马灯 / 流光</option>
+                                            <option value="1">呼吸灯</option>
+                                            <option value="0">单色常亮</option>
+                                            <option value="4">彩虹流光</option>
+                                        </select>
+                                    </label>
+                                    <label>速度
+                                        <div class="range-wrap">
+                                            <div class="range-meta"><span>慢 ← → 快</span><span class="range-value" id="printing_speed_value">40</span></div>
+                                            <input name="printing_speed" type="range" min="1" max="255" value="40" data-range-label="printing_speed_value">
+                                        </div>
+                                    </label>
+                                    <label><span class="label-row">主颜色<button type="button" class="swatch-btn" data-color-field="printing_hex"
+                                                aria-label="调色"></button></span><input name="printing_hex" type="text" class="color-text" value="#0060FF"
+                                            placeholder="#RRGGBB" autocapitalize="none" autocomplete="off" spellcheck="false"></label>
+                                </div>
+
+                                <div class="state-card">
+                                    <h4>打印完成</h4>
+                                    <p class="hint">推荐彩虹庆祝特效，也可以改成流光或呼吸灯。</p>
+                                    <label>灯效
+                                        <select name="finished_effect">
+                                            <option value="7">关闭</option>
+                                            <option value="4">彩虹流光</option>
+                                            <option value="3">跑马灯 / 流光</option>
+                                            <option value="1">呼吸灯</option>
+                                            <option value="0">单色常亮</option>
+                                            <option value="6">闪烁</option>
+                                        </select>
+                                    </label>
+                                    <label>速度
+                                        <div class="range-wrap">
+                                            <div class="range-meta"><span>慢 ← → 快</span><span class="range-value" id="finished_speed_value">18</span></div>
+                                            <input name="finished_speed" type="range" min="1" max="255" value="18" data-range-label="finished_speed_value">
+                                        </div>
+                                    </label>
+                                    <label><span class="label-row">主颜色<button type="button" class="swatch-btn" data-color-field="finished_hex"
+                                                aria-label="调色"></button></span><input name="finished_hex" type="text" class="color-text" value="#6020FF"
+                                            placeholder="#RRGGBB" autocapitalize="none" autocomplete="off" spellcheck="false"></label>
+                                </div>
+
+                                <div class="state-card">
+                                    <h4>打印暂停</h4>
+                                    <p class="hint">推荐橙色呼吸提示。</p>
+                                    <label>灯效
+                                        <select name="paused_effect">
+                                            <option value="7">关闭</option>
+                                            <option value="1">呼吸灯</option>
+                                            <option value="6">闪烁</option>
+                                            <option value="0">单色常亮</option>
+                                            <option value="2">单色渐变</option>
+                                            <option value="3">跑马灯 / 流光</option>
+                                        </select>
+                                    </label>
+                                    <label>速度
+                                        <div class="range-wrap">
+                                            <div class="range-meta"><span>慢 ← → 快</span><span class="range-value" id="paused_speed_value">45</span></div>
+                                            <input name="paused_speed" type="range" min="1" max="255" value="45" data-range-label="paused_speed_value">
+                                        </div>
+                                    </label>
+                                    <label><span class="label-row">颜色<button type="button" class="swatch-btn" data-color-field="paused_hex"
+                                                aria-label="调色"></button></span><input name="paused_hex" type="text" class="color-text" value="#FF8000"
+                                            placeholder="#RRGGBB" autocapitalize="none" autocomplete="off" spellcheck="false"></label>
+                                </div>
+
+                                <div class="state-card">
+                                    <h4>故障 / 告警 / 断料</h4>
+                                    <p class="hint">推荐红色高频爆闪，用于快速吸引注意。</p>
+                                    <label>灯效
+                                        <select name="alert_effect">
+                                            <option value="7">关闭</option>
+                                            <option value="6">闪烁</option>
+                                            <option value="0">单色常亮</option>
+                                            <option value="3">跑马灯 / 流光</option>
+                                            <option value="1">呼吸灯</option>
+                                        </select>
+                                    </label>
+                                    <label>速度
+                                        <div class="range-wrap">
+                                            <div class="range-meta"><span>慢 ← → 快</span><span class="range-value" id="alert_speed_value">8</span></div>
+                                            <input name="alert_speed" type="range" min="1" max="255" value="8" data-range-label="alert_speed_value">
+                                        </div>
+                                    </label>
+                                    <label><span class="label-row">颜色<button type="button" class="swatch-btn" data-color-field="alert_hex"
+                                                aria-label="调色"></button></span><input name="alert_hex" type="text" class="color-text" value="#FF0000"
+                                            placeholder="#RRGGBB" autocapitalize="none" autocomplete="off" spellcheck="false"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <p class="hint">这里只会保存灯光参数与状态映射，不会影响 WiFi 和打印机连接。</p>
+                        <button type="button" id="save_lighting_btn">保存灯光设置</button>
+                    </div>
+                </section>
+                <div class="notice" id="form_notice"></div>
+            </form>
+        </div>
+    </div>
+    <div class="result-screen" id="result_screen">
+        <div class="result-card">
+            <h2 id="result_title">正在连接网络</h2>
+            <p class="hint" id="result_detail">设备将在 3 秒后自动重启，请稍候重新打开配置页面。</p>
+            <div class="countdown" id="result_countdown">3 秒后重启</div>
+        </div>
+    </div>
+    <div class="help-screen" id="help_screen">
+        <div class="help-card" role="dialog" aria-modal="true">
+            <h3 id="help_title">提示</h3>
+            <p id="help_text"></p>
+            <div class="inline-actions">
+                <button type="button" class="secondary" id="help_close_btn">知道了</button>
+            </div>
+        </div>
+    </div>
+    <div class="color-screen" id="color_screen">
+        <div class="color-card" role="dialog" aria-modal="true">
+            <h3 id="color_title">调色</h3>
+            <div class="color-preview">
+                <div class="color-chip" id="color_chip"></div>
+                <input id="color_hex_input" class="color-text" type="text" value="#000000" placeholder="#RRGGBB" autocapitalize="none" autocomplete="off"
+                    spellcheck="false">
+            </div>
+            <div class="picker-grid">
+                <div class="picker-wrap" id="wheel_wrap">
+                    <canvas id="color_wheel" class="picker-canvas" width="220" height="220"></canvas>
+                    <div class="picker-indicator" id="hue_indicator"></div>
+                </div>
+                <div class="picker-wrap" id="sv_wrap">
+                    <canvas id="color_sv" class="picker-canvas" width="220" height="220"></canvas>
+                    <div class="picker-indicator" id="sv_indicator"></div>
+                </div>
+            </div>
+            <div class="inline-actions" style="margin-top:14px">
+                <button type="button" class="secondary" id="color_cancel_btn">取消</button>
+                <button type="button" id="color_apply_btn">应用</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        var buttons = document.querySelectorAll('.tab-btn');
+        var panels = document.querySelectorAll('.tab-panel');
+        var form = document.querySelector('form');
+        var notice = document.getElementById('form_notice');
+        var disconnectButton = document.getElementById('disconnect_wifi_btn');
+        var connectWifiButton = document.getElementById('connect_wifi_btn');
+        var savePrinterButton = document.getElementById('save_printer_btn');
+        var saveLightingButton = document.getElementById('save_lighting_btn');
+        var wifiStatusBadge = document.getElementById('wifi_status_badge');
+        var wifiStatusTitle = document.getElementById('wifi_status_title');
+        var wifiStatusText = document.getElementById('wifi_status_text');
+        var resultScreen = document.getElementById('result_screen');
+        var resultTitle = document.getElementById('result_title');
+        var resultDetail = document.getElementById('result_detail');
+        var resultCountdown = document.getElementById('result_countdown');
+        var helpScreen = document.getElementById('help_screen');
+        var helpTitle = document.getElementById('help_title');
+        var helpText = document.getElementById('help_text');
+        var helpCloseButton = document.getElementById('help_close_btn');
+        var colorScreen = document.getElementById('color_screen');
+        var colorTitle = document.getElementById('color_title');
+        var colorChip = document.getElementById('color_chip');
+        var colorHexInput = document.getElementById('color_hex_input');
+        var colorWheelCanvas = document.getElementById('color_wheel');
+        var colorSvCanvas = document.getElementById('color_sv');
+        var wheelWrap = document.getElementById('wheel_wrap');
+        var svWrap = document.getElementById('sv_wrap');
+        var hueIndicator = document.getElementById('hue_indicator');
+        var svIndicator = document.getElementById('sv_indicator');
+        var colorCancelButton = document.getElementById('color_cancel_btn');
+        var colorApplyButton = document.getElementById('color_apply_btn');
+        var activeColorField = null;
+        var pickerHue = 0;
+        var pickerS = 0;
+        var pickerV = 0;
+        var hueWheelReady = false;
+        var restartTimer = null;
+        var wifiPollTimer = null;
+        buttons.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var tab = btn.getAttribute('data-tab');
+                buttons.forEach(function (item) { item.classList.remove('active'); });
+                panels.forEach(function (panel) { panel.classList.remove('active'); });
+                btn.classList.add('active');
+                document.getElementById('tab-' + tab).classList.add('active');
+            });
+        });
+
+        function setValue(name, value) {
+            var element = form.querySelector('[name="' + name + '"]');
+            if (!element) return;
+            element.value = value == null ? '' : value;
+        }
+
+        function pick(value, fallback) {
+            return value == null ? fallback : value;
+        }
+
+        function updateRangeLabels() {
+            form.querySelectorAll('[data-range-label]').forEach(function (input) {
+                var target = document.getElementById(input.getAttribute('data-range-label'));
+                if (target) target.textContent = input.value;
+            });
+        }
+
+        function showNotice(kind, message) {
+            if (!notice) return;
+            notice.className = 'notice show ' + kind;
+            notice.textContent = message;
+        }
+
+        function normalizeHex(value) {
+            if (!value) return null;
+            var text = String(value).trim();
+            if (text[0] !== '#') text = '#' + text;
+            if (!/^#[0-9a-fA-F]{6}$/.test(text)) return null;
+            return text.toUpperCase();
+        }
+
+        function hexToRgb(hex) {
+            var normalized = normalizeHex(hex);
+            if (!normalized) return null;
+            var raw = normalized.substring(1);
+            return {
+                r: parseInt(raw.substring(0, 2), 16),
+                g: parseInt(raw.substring(2, 4), 16),
+                b: parseInt(raw.substring(4, 6), 16)
+            };
+        }
+
+        function rgbToHex(r, g, b) {
+            function to2(n) {
+                var s = Math.max(0, Math.min(255, n | 0)).toString(16).toUpperCase();
+                return s.length === 1 ? '0' + s : s;
+            }
+            return '#' + to2(r) + to2(g) + to2(b);
+        }
+
+        function hsvToRgb(h, s, v) {
+            var hh = ((h % 360) + 360) % 360;
+            var c = v * s;
+            var x = c * (1 - Math.abs(((hh / 60) % 2) - 1));
+            var m = v - c;
+            var r1 = 0, g1 = 0, b1 = 0;
+            if (hh < 60) { r1 = c; g1 = x; b1 = 0; }
+            else if (hh < 120) { r1 = x; g1 = c; b1 = 0; }
+            else if (hh < 180) { r1 = 0; g1 = c; b1 = x; }
+            else if (hh < 240) { r1 = 0; g1 = x; b1 = c; }
+            else if (hh < 300) { r1 = x; g1 = 0; b1 = c; }
+            else { r1 = c; g1 = 0; b1 = x; }
+            return {
+                r: Math.round((r1 + m) * 255),
+                g: Math.round((g1 + m) * 255),
+                b: Math.round((b1 + m) * 255)
+            };
+        }
+
+        function rgbToHsv(r, g, b) {
+            var rr = r / 255, gg = g / 255, bb = b / 255;
+            var max = Math.max(rr, gg, bb), min = Math.min(rr, gg, bb);
+            var d = max - min;
+            var h = 0;
+            if (d === 0) h = 0;
+            else if (max === rr) h = 60 * (((gg - bb) / d) % 6);
+            else if (max === gg) h = 60 * (((bb - rr) / d) + 2);
+            else h = 60 * (((rr - gg) / d) + 4);
+            if (h < 0) h += 360;
+            var s = max === 0 ? 0 : d / max;
+            var v = max;
+            return { h: h, s: s, v: v };
+        }
+
+        function setSwatch(fieldName, hex) {
+            var swatch = document.querySelector('.swatch-btn[data-color-field="' + fieldName + '"]');
+            if (!swatch) return;
+            var normalized = normalizeHex(hex) || '#000000';
+            swatch.style.background = normalized;
+        }
+
+        function refreshSwatches() {
+            document.querySelectorAll('input.color-text').forEach(function (input) {
+                setSwatch(input.name, input.value);
+            });
+        }
+
+        function setPickerFromHex(hex) {
+            var rgb = hexToRgb(hex);
+            if (!rgb) {
+                pickerHue = 0;
+                pickerS = 0;
+                pickerV = 0;
+                return;
+            }
+            var hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
+            pickerHue = hsv.h;
+            pickerS = hsv.s;
+            pickerV = hsv.v;
+        }
+
+        function currentPickerHex() {
+            var rgb = hsvToRgb(pickerHue, pickerS, pickerV);
+            return rgbToHex(rgb.r, rgb.g, rgb.b);
+        }
+
+        function placeIndicator(indicator, canvas, wrap, xCanvas, yCanvas) {
+            if (!indicator || !canvas || !wrap) return;
+            var wrapRect = wrap.getBoundingClientRect();
+            var canvasRect = canvas.getBoundingClientRect();
+            var scaleX = canvasRect.width / canvas.width;
+            var scaleY = canvasRect.height / canvas.height;
+            var left = (canvasRect.left - wrapRect.left) + xCanvas * scaleX;
+            var top = (canvasRect.top - wrapRect.top) + yCanvas * scaleY;
+            indicator.style.left = left + 'px';
+            indicator.style.top = top + 'px';
+        }
+
+        function updatePickerIndicators() {
+            if (!colorWheelCanvas || !hueIndicator || !colorSvCanvas || !svIndicator) return;
+            var cx = colorWheelCanvas.width / 2;
+            var cy = colorWheelCanvas.height / 2;
+            var outer = Math.min(cx, cy) - 4;
+            var inner = outer - 22;
+            var angle = (pickerHue - 90) * Math.PI / 180;
+            var radius = (inner + outer) / 2;
+            var hx = cx + Math.cos(angle) * radius;
+            var hy = cy + Math.sin(angle) * radius;
+            placeIndicator(hueIndicator, colorWheelCanvas, wheelWrap, hx, hy);
+
+            var svW = colorSvCanvas.width;
+            var svH = colorSvCanvas.height;
+            var x = Math.max(0, Math.min(svW - 1, pickerS * (svW - 1)));
+            var y = Math.max(0, Math.min(svH - 1, (1 - pickerV) * (svH - 1)));
+            placeIndicator(svIndicator, colorSvCanvas, svWrap, x, y);
+        }
+
+        function drawHueWheel() {
+            if (!colorWheelCanvas) return;
+            var ctx = colorWheelCanvas.getContext('2d');
+            if (!ctx) return;
+            var w = colorWheelCanvas.width;
+            var h = colorWheelCanvas.height;
+            var cx = w / 2;
+            var cy = h / 2;
+            var outer = Math.min(cx, cy) - 4;
+            var inner = outer - 22;
+            var img = ctx.createImageData(w, h);
+            var data = img.data;
+            for (var y = 0; y < h; y++) {
+                for (var x = 0; x < w; x++) {
+                    var dx = x - cx;
+                    var dy = y - cy;
+                    var r = Math.sqrt(dx * dx + dy * dy);
+                    var idx = (y * w + x) * 4;
+                    if (r >= inner && r <= outer) {
+                        var ang = Math.atan2(dy, dx);
+                        var hue = (ang * 180 / Math.PI + 90);
+                        if (hue < 0) hue += 360;
+                        var rgb = hsvToRgb(hue, 1, 1);
+                        data[idx] = rgb.r;
+                        data[idx + 1] = rgb.g;
+                        data[idx + 2] = rgb.b;
+                        data[idx + 3] = 255;
+                    } else {
+                        data[idx + 3] = 0;
+                    }
+                }
+            }
+            ctx.putImageData(img, 0, 0);
+            hueWheelReady = true;
+        }
+
+        function drawSvSquare() {
+            if (!colorSvCanvas) return;
+            var ctx = colorSvCanvas.getContext('2d');
+            if (!ctx) return;
+            var w = colorSvCanvas.width;
+            var h = colorSvCanvas.height;
+            var img = ctx.createImageData(w, h);
+            var data = img.data;
+            for (var y = 0; y < h; y++) {
+                for (var x = 0; x < w; x++) {
+                    var s = x / (w - 1);
+                    var v = 1 - (y / (h - 1));
+                    var rgb = hsvToRgb(pickerHue, s, v);
+                    var idx = (y * w + x) * 4;
+                    data[idx] = rgb.r;
+                    data[idx + 1] = rgb.g;
+                    data[idx + 2] = rgb.b;
+                    data[idx + 3] = 255;
+                }
+            }
+            ctx.putImageData(img, 0, 0);
+        }
+
+        function updateColorModalFromPicker() {
+            var hex = currentPickerHex();
+            if (colorHexInput) colorHexInput.value = hex;
+            if (colorChip) colorChip.style.background = hex;
+            updatePickerIndicators();
+        }
+
+        function getCanvasPoint(canvas, clientX, clientY) {
+            var rect = canvas.getBoundingClientRect();
+            var x = (clientX - rect.left) * (canvas.width / rect.width);
+            var y = (clientY - rect.top) * (canvas.height / rect.height);
+            return { x: x, y: y };
+        }
+
+        function bindDrag(canvas, onPoint) {
+            if (!canvas) return;
+            function start(e) {
+                e.preventDefault();
+                var move = function (ev) {
+                    var p = (ev.touches && ev.touches[0]) ? ev.touches[0] : ev;
+                    var pt = getCanvasPoint(canvas, p.clientX, p.clientY);
+                    onPoint(pt.x, pt.y);
+                };
+                var end = function () {
+                    document.removeEventListener('mousemove', move);
+                    document.removeEventListener('mouseup', end);
+                    document.removeEventListener('touchmove', move);
+                    document.removeEventListener('touchend', end);
+                };
+                move(e.touches && e.touches[0] ? e.touches[0] : e);
+                document.addEventListener('mousemove', move, { passive: false });
+                document.addEventListener('mouseup', end, { passive: false });
+                document.addEventListener('touchmove', move, { passive: false });
+                document.addEventListener('touchend', end, { passive: false });
+            }
+            canvas.addEventListener('mousedown', start, { passive: false });
+            canvas.addEventListener('touchstart', start, { passive: false });
+        }
+
+        function openColorModal(fieldName) {
+            var input = form.querySelector('[name="' + fieldName + '"]');
+            if (!input || !colorScreen) return;
+            activeColorField = fieldName;
+            var label = fieldName;
+            if (fieldName === 'default_hex') label = '默认待机颜色';
+            else if (fieldName === 'progress_background_hex') label = '进度条背景色';
+            else if (fieldName === 'idle_hex') label = '待机颜色';
+            else if (fieldName === 'heating_hex') label = '加热颜色';
+            else if (fieldName === 'printing_hex') label = '打印主颜色';
+            else if (fieldName === 'finished_hex') label = '完成主颜色';
+            else if (fieldName === 'paused_hex') label = '暂停颜色';
+            else if (fieldName === 'alert_hex') label = '告警颜色';
+            if (colorTitle) colorTitle.textContent = '调色：' + label;
+            setPickerFromHex(input.value || '#000000');
+            if (!hueWheelReady) drawHueWheel();
+            drawSvSquare();
+            updateColorModalFromPicker();
+            colorScreen.classList.add('show');
+        }
+
+        function closeColorModal() {
+            if (!colorScreen) return;
+            colorScreen.classList.remove('show');
+            activeColorField = null;
+        }
+
+        function updateWifiStatus(config) {
+            var connected = !!config.wifi_connected;
+            var ssid = config.connected_wifi_ssid || config.wifi_ssid || '';
+            wifiStatusBadge.textContent = connected ? '已连接' : '未连接';
+            wifiStatusBadge.className = 'status-pill ' + (connected ? 'online' : 'offline');
+            wifiStatusTitle.textContent = connected ? ('当前已连接到 ' + ssid) : '当前未连接到路由器';
+            wifiStatusText.textContent = connected
+                ? '设备已经连上 ' + ssid + '，如需切换网络可直接修改 WiFi 信息，或先断开当前 WiFi。'
+                : '设备会持续开启配置热点，你也可以在这里填写家里或工作室的 WiFi 信息。';
+            disconnectButton.hidden = !connected;
+        }
+
+        function showRestartScreen(title, detail, seconds) {
+            var remaining = seconds || 3;
+            if (restartTimer) {
+                clearInterval(restartTimer);
+            }
+            resultTitle.textContent = title;
+            resultDetail.textContent = detail;
+            resultCountdown.textContent = remaining + ' 秒后重启';
+            resultScreen.classList.add('show');
+            restartTimer = setInterval(function () {
+                remaining -= 1;
+                if (remaining <= 0) {
+                    clearInterval(restartTimer);
+                    restartTimer = null;
+                    resultCountdown.textContent = '设备正在重启，请稍候重新连接。';
+                    return;
+                }
+                resultCountdown.textContent = remaining + ' 秒后重启';
+            }, 1000);
+        }
+
+        function serializeForm(targetForm, allowedNames) {
+            var allowedMap = null;
+            if (allowedNames && allowedNames.length) {
+                allowedMap = {};
+                allowedNames.forEach(function (name) { allowedMap[name] = true; });
+            }
+            var parts = [];
+            Array.prototype.forEach.call(targetForm.elements, function (field) {
+                if (!field.name || field.disabled) return;
+                if (allowedMap && !allowedMap[field.name]) return;
+                if (field.type === 'radio' && !field.checked) return;
+                if (field.type === 'checkbox' && !field.checked) {
+                    parts.push(encodeURIComponent(field.name) + '=');
+                    return;
+                }
+                parts.push(encodeURIComponent(field.name) + '=' + encodeURIComponent(field.value));
+            });
+            return parts.join('&');
+        }
+
+        function requestJson(method, url, body, onSuccess, onError) {
+            var xhr = new XMLHttpRequest();
+            xhr.open(method, url, true);
+            xhr.setRequestHeader('Accept', 'application/json');
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            if (body != null) {
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            }
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState !== 4) return;
+                try {
+                    var parsed = xhr.responseText ? JSON.parse(xhr.responseText) : null;
+                    if (xhr.status < 200 || xhr.status >= 300) {
+                        if (parsed) {
+                            onSuccess(parsed);
+                            return;
+                        }
+                        onError();
+                        return;
+                    }
+                    onSuccess(parsed);
+                } catch (e) {
+                    onError();
+                }
+            };
+            xhr.onerror = onError;
+            xhr.send(body || null);
+        }
+
+        function valuesMatch(saved, field) {
+            if (!field) return true;
+            if (field.type === 'checkbox') return !!saved === field.checked;
+            if (field.type === 'number') return String(saved || '') === String(field.value || '');
+            return String(saved || '') === String(field.value || '');
+        }
+
+        function verifySaved(fieldNames, onVerified, onNotVerified) {
+            requestJson('GET', '/api/config', null, function (config) {
+                var ok = true;
+                fieldNames.forEach(function (name) {
+                    var field = form.querySelector('[name="' + name + '"]');
+                    if (!field) return;
+                    if (!valuesMatch(config[name], field)) ok = false;
+                });
+                if (ok) {
+                    onVerified(config);
+                } else {
+                    onNotVerified();
+                }
+            }, onNotVerified);
+        }
+
+        function showHelp(title, text) {
+            if (!helpScreen) return;
+            helpTitle.textContent = title || '提示';
+            helpText.textContent = text || '';
+            helpScreen.classList.add('show');
+        }
+
+        function hideHelp() {
+            if (!helpScreen) return;
+            helpScreen.classList.remove('show');
+        }
+
+        document.querySelectorAll('.help-icon').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                showHelp(btn.getAttribute('data-help-title'), btn.getAttribute('data-help-text'));
+            });
+        });
+
+        if (helpCloseButton) {
+            helpCloseButton.addEventListener('click', function () {
+                hideHelp();
+            });
+        }
+
+        if (helpScreen) {
+            helpScreen.addEventListener('click', function (e) {
+                if (e.target === helpScreen) hideHelp();
+            });
+        }
+
+        document.querySelectorAll('.swatch-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                openColorModal(btn.getAttribute('data-color-field'));
+            });
+        });
+
+        document.querySelectorAll('input.color-text').forEach(function (input) {
+            setSwatch(input.name, input.value);
+            input.addEventListener('blur', function () {
+                var normalized = normalizeHex(input.value);
+                if (normalized) {
+                    input.value = normalized;
+                    setSwatch(input.name, normalized);
+                }
+            });
+        });
+
+        bindDrag(colorWheelCanvas, function (x, y) {
+            var cx = colorWheelCanvas.width / 2;
+            var cy = colorWheelCanvas.height / 2;
+            var outer = Math.min(cx, cy) - 4;
+            var inner = outer - 22;
+            var dx = x - cx;
+            var dy = y - cy;
+            var r = Math.sqrt(dx * dx + dy * dy);
+            if (r < inner || r > outer) return;
+            var ang = Math.atan2(dy, dx);
+            var hue = (ang * 180 / Math.PI + 90);
+            if (hue < 0) hue += 360;
+            pickerHue = hue;
+            drawSvSquare();
+            updateColorModalFromPicker();
+        });
+
+        bindDrag(colorSvCanvas, function (x, y) {
+            var w = colorSvCanvas.width;
+            var h = colorSvCanvas.height;
+            pickerS = Math.max(0, Math.min(1, x / (w - 1)));
+            pickerV = Math.max(0, Math.min(1, 1 - (y / (h - 1))));
+            updateColorModalFromPicker();
+        });
+
+        if (colorHexInput) {
+            colorHexInput.addEventListener('input', function () {
+                var normalized = normalizeHex(colorHexInput.value);
+                if (!normalized) return;
+                setPickerFromHex(normalized);
+                drawSvSquare();
+                updateColorModalFromPicker();
+            });
+        }
+
+        if (colorApplyButton) {
+            colorApplyButton.addEventListener('click', function () {
+                if (!activeColorField) {
+                    closeColorModal();
+                    return;
+                }
+                var hex = normalizeHex(colorHexInput.value) || currentPickerHex();
+                setValue(activeColorField, hex);
+                setSwatch(activeColorField, hex);
+                closeColorModal();
+            });
+        }
+
+        if (colorCancelButton) {
+            colorCancelButton.addEventListener('click', function () {
+                closeColorModal();
+            });
+        }
+
+        if (colorScreen) {
+            colorScreen.addEventListener('click', function (e) {
+                if (e.target === colorScreen) closeColorModal();
+            });
+        }
+
+        function stopWifiConnectPolling() {
+            if (wifiPollTimer) {
+                clearInterval(wifiPollTimer);
+                wifiPollTimer = null;
+            }
+        }
+
+        function handleWifiConnectProgress(config) {
+            var state = config.wifi_connect_state || 'idle';
+            if (state === 'connecting') {
+                showNotice('pending', config.wifi_connect_detail || '正在尝试连接 WiFi...');
+                return;
+            }
+            if (state === 'failed') {
+                stopWifiConnectPolling();
+                showNotice('error', config.wifi_connect_detail || 'WiFi 连接失败，请检查名称和密码后重试。');
+                return;
+            }
+            if (state === 'restart_pending') {
+                stopWifiConnectPolling();
+                showRestartScreen(
+                    config.wifi_connect_message || 'WiFi 连接成功',
+                    config.wifi_connect_detail || '设备即将自动重启。',
+                    config.restart_delay || 3
+                );
+            }
+        }
+
+        function fetchConfig(onSuccess, onError) {
+            requestJson('GET', '/api/config', null, function (config) {
+                updateWifiStatus(config);
+                handleWifiConnectProgress(config);
+                if (onSuccess) onSuccess(config);
+            }, function () {
+                if (onError) onError();
+            });
+        }
+
+        function startWifiConnectPolling() {
+            stopWifiConnectPolling();
+            fetchConfig();
+            wifiPollTimer = setInterval(function () {
+                fetchConfig(null, function () {
+                    stopWifiConnectPolling();
+                    showNotice('error', '获取 WiFi 连接状态失败，请稍后刷新页面再试。');
+                });
+            }, 1000);
+        }
+
+        form.querySelectorAll('[data-range-label]').forEach(function (input) {
+            input.addEventListener('input', updateRangeLabels);
+        });
+
+        function submitConfig(fieldNames, pendingText) {
+            showNotice('pending', pendingText);
+            var body = serializeForm(form, fieldNames);
+            requestJson('POST', '/api/config', body, function (result) {
+                if (result.restart_required) {
+                    showRestartScreen(result.message, result.detail, result.restart_delay || 3);
+                    return;
+                }
+                if (result.ok === false) {
+                    showNotice('error', result.detail || result.message || '保存失败，请稍后重试。');
+                    return;
+                }
+                showNotice('success', result.detail || result.message || '配置已保存');
+            }, function () {
+                verifySaved(fieldNames, function () {
+                    showNotice('success', '配置已保存');
+                }, function () {
+                    showNotice('error', '保存失败，请稍后重试。');
+                });
+            });
+        }
+
+        connectWifiButton.addEventListener('click', function () {
+            var ssid = form.querySelector('[name="wifi_ssid"]');
+            if (!ssid || !ssid.value.trim()) {
+                showNotice('error', '请先输入要连接的 WiFi 名称。');
+                return;
+            }
+            stopWifiConnectPolling();
+            showNotice('pending', '正在应用 WiFi 配置并尝试连接...');
+            var body = serializeForm(form, ['wifi_ssid', 'wifi_password']);
+            requestJson('POST', '/api/config', body, function (result) {
+                if (result.ok === false) {
+                    showNotice('error', result.detail || result.message || 'WiFi 配置提交失败。');
+                    return;
+                }
+                if (result.restart_required || result.wifi_connect_state === 'restart_pending') {
+                    showRestartScreen(result.message, result.detail, result.restart_delay || 3);
+                    return;
+                }
+                showNotice('pending', result.detail || '正在尝试连接 WiFi...');
+                startWifiConnectPolling();
+            }, function () {
+                showNotice('error', '提交 WiFi 配置失败，请稍后重试。');
+            });
+        });
+
+        savePrinterButton.addEventListener('click', function () {
+            submitConfig(['printer_ip', 'printer_access_code', 'printer_serial', 'mqtt_port', 'mqtt_use_tls'], '正在保存打印机配置...');
+        });
+
+        saveLightingButton.addEventListener('click', function () {
+            submitConfig([
+                'led_count', 'led_gpio', 'brightness', 'effect_speed', 'default_hex', 'progress_background_hex',
+                'idle_effect', 'idle_speed', 'idle_hex',
+                'heating_effect', 'heating_speed', 'heating_hex',
+                'printing_effect', 'printing_speed', 'printing_hex',
+                'finished_effect', 'finished_speed', 'finished_hex',
+                'paused_effect', 'paused_speed', 'paused_hex',
+                'alert_effect', 'alert_speed', 'alert_hex'
+            ], '正在保存灯光设置...');
+        });
+
+        disconnectButton.addEventListener('click', function () {
+            stopWifiConnectPolling();
+            showNotice('pending', '正在断开当前 WiFi...');
+            requestJson('POST', '/api/wifi/disconnect', '', function (result) {
+                showNotice('success', result.detail || result.message || '已断开当前 WiFi。');
+                setValue('wifi_ssid', '');
+                setValue('wifi_password', '');
+                fetchConfig();
+            }, function () {
+                showNotice('error', '断开失败，请稍后重试。');
+            });
+        });
+
+        fetchConfig(function (config) {
+            updateWifiStatus(config);
+            setValue('wifi_ssid', config.wifi_ssid);
+            setValue('wifi_password', '');
+            setValue('printer_ip', config.printer_ip);
+            var mqttPort = config.mqtt_port || 8883;
+            setValue('printer_access_code', '');
+            setValue('printer_serial', config.printer_serial);
+            setValue('led_count', pick(config.led_count, 10));
+            setValue('led_gpio', pick(config.led_gpio, 1));
+            setValue('brightness', pick(config.brightness, 64));
+            setValue('effect_speed', pick(config.effect_speed, 40));
+            setValue('default_hex', pick(config.default_hex, '#202020'));
+            setValue('progress_background_hex', pick(config.progress_background_hex, '#04040C'));
+            setValue('idle_effect', pick(config.idle_effect, 0));
+            setValue('idle_speed', pick(config.idle_speed, 40));
+            setValue('idle_hex', pick(config.idle_hex, '#000000'));
+            setValue('heating_effect', pick(config.heating_effect, 6));
+            setValue('heating_speed', pick(config.heating_speed, 70));
+            setValue('heating_hex', pick(config.heating_hex, '#FFAA30'));
+            setValue('printing_effect', pick(config.printing_effect, 5));
+            setValue('printing_speed', pick(config.printing_speed, 40));
+            setValue('printing_hex', pick(config.printing_hex, '#0060FF'));
+            setValue('finished_effect', pick(config.finished_effect, 4));
+            setValue('finished_speed', pick(config.finished_speed, 18));
+            setValue('finished_hex', pick(config.finished_hex, '#6020FF'));
+            setValue('paused_effect', pick(config.paused_effect, 1));
+            setValue('paused_speed', pick(config.paused_speed, 45));
+            setValue('paused_hex', pick(config.paused_hex, '#FF8000'));
+            setValue('alert_effect', pick(config.alert_effect, 6));
+            setValue('alert_speed', pick(config.alert_speed, 8));
+            setValue('alert_hex', pick(config.alert_hex, '#FF0000'));
+            var tls = form.querySelector('[name="mqtt_use_tls"]');
+            if (config.printer_serial && (mqttPort === 1883 || mqttPort === '1883') && (!!config.mqtt_use_tls)) {
+                mqttPort = 8883;
+                if (tls) tls.checked = true;
+            } else if (config.printer_serial && (mqttPort === 1883 || mqttPort === '1883') && !config.mqtt_use_tls) {
+                mqttPort = 8883;
+                if (tls) tls.checked = true;
+            } else if (tls) {
+                tls.checked = (config.mqtt_use_tls === undefined) ? true : !!config.mqtt_use_tls;
+            }
+            setValue('mqtt_port', mqttPort);
+            refreshSwatches();
+            updateRangeLabels();
+        }, function () {});
+        updateRangeLabels();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+idf_component_register(
+    SRCS
+        "main.cpp"
+        "app_controller.cpp"
+        "config_store.cpp"
+        "led_controller.cpp"
+        "mqtt_service.cpp"
+        "web_server.cpp"
+        "wifi_service.cpp"
+    INCLUDE_DIRS "include"
+    REQUIRES
+        esp_event
+        esp_http_server
+        esp_netif
+        esp_wifi
+        json
+        led_strip
+        lwip
+        mqtt
+        nvs_flash
+        dns_server
+    EMBED_TXTFILES
+        "data/index.html"
+)
